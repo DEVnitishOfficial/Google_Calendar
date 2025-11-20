@@ -5,11 +5,17 @@ import v2Router from './routers/v2/index.router';
 import { genericErrorHandler } from './middlewares/error.middleware';
 import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
+import connectToDB from './config/db';
+import cors from 'cors';
 
 
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: '*'
+}));
+
 
 
 app.use(attachCorrelationIdMiddleware)
@@ -19,7 +25,8 @@ app.use('/api/v2', v2Router);
 
 app.use(genericErrorHandler);
 
-app.listen(serverConfig.PORT, () => {
+app.listen(serverConfig.PORT, async () => {
+    await connectToDB(serverConfig.MONGO_URI);
     console.log(`server is listening at  http://localhost:${serverConfig.PORT}`)
     logger.info("press Ctrl + C to stop the server", { "name": "dev-server" })
 });
