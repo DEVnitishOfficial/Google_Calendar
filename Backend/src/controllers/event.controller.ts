@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as eventService from "../services/event.service";
+import { internalServerError } from "../utils/errors/app.error";
 
 const DEMO_USER_ID = "demo-user";
 
@@ -23,7 +24,7 @@ export const getEvents = async (req: Request, res: Response) => {
     res.json(events);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    throw new internalServerError("Server error occurred while fetching events");
   }
 };
 
@@ -44,10 +45,14 @@ export const postEvent = async (req: Request, res: Response) => {
       color,
     });
 
-    res.status(201).json(event);
+    res.status(201).json({
+        success:true,
+        message : "Event created successfully",
+        data:event
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    throw new internalServerError("Server error occurred while creating event");
   }
 };
 
@@ -74,7 +79,7 @@ export const putEvent = async (req: Request, res: Response) => {
     res.json(updated);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    throw new internalServerError("Server error occurred while updating event");
   }
 };
 
@@ -91,6 +96,6 @@ export const deleteEvent = async (req: Request, res: Response) => {
     res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    throw new internalServerError("Server error occurred while deleting event");
   }
 };
